@@ -1,5 +1,6 @@
 import { SearchIcon, XIcon } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { Stripes } from '@/components/brand'
 import { Kbd } from '@/components/ui/kbd'
 import { useHotkey } from '@/hooks/use-hotkey'
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
@@ -25,15 +26,18 @@ export function PageHeader({ title, description, search, onSearch, children }: P
   useHotkey({ code: 'Slash' }, () => inputRef.current?.focus())
 
   return (
-    <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div className="min-w-0">
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+        <h1 className="flex items-center gap-2.5 text-xl font-bold tracking-tight sm:text-2xl">
+          <Stripes />
+          {title}
+        </h1>
         {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <form
           role="search"
-          className="w-full sm:w-64"
+          className="w-full sm:w-64 sm:flex-none"
           onSubmit={(event) => {
             event.preventDefault()
             onSearch(draft.trim())
@@ -41,7 +45,7 @@ export function PageHeader({ title, description, search, onSearch, children }: P
         >
           <InputGroup>
             <InputGroupAddon>
-              <SearchIcon />
+              <SearchIcon aria-hidden />
             </InputGroupAddon>
             <InputGroupInput
               ref={inputRef}
@@ -69,13 +73,13 @@ export function PageHeader({ title, description, search, onSearch, children }: P
                     onSearch('')
                   }}
                 >
-                  <XIcon />
+                  <XIcon aria-hidden />
                 </InputGroupButton>
               </InputGroupAddon>
             )}
           </InputGroup>
         </form>
-        {children && <div className="flex gap-2 [&>*]:flex-1 sm:[&>*]:flex-none">{children}</div>}
+        {children && <div className="flex flex-wrap gap-2 [&>*]:flex-1 sm:[&>*]:flex-none">{children}</div>}
       </div>
     </header>
   )

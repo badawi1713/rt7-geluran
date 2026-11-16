@@ -42,3 +42,16 @@ API tidak menyediakan endpoint refresh token, jadi sesi tidak bisa diperpanjang 
 | Dialog Bayar | `Enter`/`↓` cari anggota, `Enter` pilih, `↑↓` pindah tagihan, `Spasi` centang, `Enter` bayar, `Enter` konfirmasi |
 
 Dialog konfirmasi hapus memberi fokus awal ke "Batal", supaya `Enter` tidak langsung menghapus data.
+
+## Deploy ke Vercel
+
+1. Import repo ini di Vercel. Framework terdeteksi sebagai **Vite**, sehingga build command `npm run build` dan output `dist` tidak perlu diubah.
+2. Di **Settings → Environment Variables**, tambahkan variabel berikut untuk Production dan Preview:
+
+   | Name | Value |
+   | --- | --- |
+   | `VITE_API_BASE_URL` | `https://api-geluran.inpam.id` |
+
+3. Deploy. Nilai `VITE_*` ditanam saat build, jadi setiap kali nilainya diubah, lakukan **Redeploy**.
+
+`vercel.json` mengarahkan semua rute ke `index.html`. Tanpa itu, membuka langsung atau me-refresh halaman seperti `/transaksi/arisan` akan menghasilkan 404.

@@ -34,8 +34,8 @@ export function ArisanMeetingsPage() {
   const deleteMutation = useDeleteArisanMeeting()
 
   const columns: Column<ArisanMeeting>[] = [
-    { header: 'No', align: 'center', className: 'w-14 tabular-nums', cell: (_, n) => n },
-    { header: 'Lokasi', cell: (row) => <span className="font-medium">{row.lokasi || '-'}</span> },
+    { header: 'No', align: 'center', className: 'w-14 tabular-nums', mobile: 'hide', cell: (_, n) => n },
+    { header: 'Lokasi', mobile: 'title', cell: (row) => <span className="font-medium">{row.lokasi || '-'}</span> },
     { header: 'Tanggal', align: 'center', cell: (row) => row.tanggal || '-' },
     { header: 'Pertemuan Ke', align: 'center', className: 'tabular-nums', cell: (row) => row.pertemuan_ke || '-' },
     { header: 'Anggota Dapat 1', cell: (row) => row.anggota_dapat_1 || '-' },
@@ -45,6 +45,7 @@ export function ArisanMeetingsPage() {
     {
       header: 'Aksi',
       align: 'center',
+      mobile: 'actions',
       cell: (row) => (
         <RowActions
           label={`pertemuan ke-${row.pertemuan_ke ?? row.id}`}
@@ -64,11 +65,13 @@ export function ArisanMeetingsPage() {
         onSearch={(search) => setParams({ search, page: 0 })}
       >
         <ShortcutButton shortcut="N" onClick={() => setCreateOpen(true)}>
-          <PlusIcon /> Tambah
+          <PlusIcon aria-hidden /> Tambah pertemuan
         </ShortcutButton>
       </PageHeader>
 
+      <title>Pertemuan Arisan · Arisan RT 7 Geluran</title>
       <DataTable
+        label="Daftar pertemuan arisan"
         columns={columns}
         rows={query.data?.rows ?? []}
         total={query.data?.total ?? 0}
@@ -185,7 +188,7 @@ function MeetingDialog({ meeting, onClose }: { meeting?: ArisanMeeting; onClose:
     <FormDialog
       open
       onOpenChange={(open) => !open && onClose()}
-      title={isEdit ? 'Edit Data' : 'Data Baru'}
+      title={isEdit ? 'Ubah pertemuan' : 'Tambah pertemuan'}
       formId="meeting-form"
       pending={pending}
     >

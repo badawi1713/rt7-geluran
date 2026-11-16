@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -13,9 +14,17 @@ export interface Column<T> {
   cell: (row: T, rowNumber: number) => React.ReactNode
   align?: 'left' | 'center' | 'right'
   className?: string
+  /**
+   * Phone layout (below md), where each row becomes a card:
+   * 'title' heads the card, 'badge' sits beside the title, 'actions' goes to the card footer,
+   * 'hide' is left out (e.g. the row number), anything else is a label/value line.
+   */
+  mobile?: 'title' | 'badge' | 'actions' | 'hide'
 }
 
 interface DataTableProps<T> {
+  /** Names what the rows are, for screen readers ("Daftar anggota"). */
+  label: string
   columns: Column<T>[]
   rows: T[]
   total: number
@@ -31,6 +40,7 @@ interface DataTableProps<T> {
 const alignClass = { left: 'text-left', center: 'text-center', right: 'text-right' }
 
 export function DataTable<T>({
+  label,
   columns,
   rows,
   total,
@@ -43,6 +53,25 @@ export function DataTable<T>({
   onRetry,
 }: DataTableProps<T>) {
   const offset = params.page * params.size
+  const refreshing = isFetching && !isLoading
+
+  let state: React.ReactNode = null
+  if (error && !isLoading) {
+    state = (
+      <>
+        <p className="text-destructive">{getErrorMessage(error)}</p>
+        <Button variant="outline" className="mt-3" onClick={onRetry}>
+          Coba lagi
+        </Button>
+      </>
+    )
+  } else if (!isLoading && rows.length === 0) {
+    state = (
+      <p className="text-muted-foreground">
+        {params.search ? `Tidak ada data yang cocok dengan "${params.search}".` : 'Belum ada data.'}
+      </p>
+    )
+  }
 
   let body: React.ReactNode
   if (isLoading) {
@@ -55,23 +84,8 @@ export function DataTable<T>({
         ))}
       </TableRow>
     ))
-  } else if (error) {
-    body = (
-      <StateRow colSpan={columns.length}>
-        <p className="text-destructive">{getErrorMessage(error)}</p>
-        <Button variant="outline" size="sm" className="mt-3" onClick={onRetry}>
-          Coba lagi
-        </Button>
-      </StateRow>
-    )
-  } else if (rows.length === 0) {
-    body = (
-      <StateRow colSpan={columns.length}>
-        <p className="text-muted-foreground">
-          {params.search ? `Tidak ada data yang cocok dengan "${params.search}".` : 'Belum ada data.'}
-        </p>
-      </StateRow>
-    )
+  } else if (state) {
+    body = <StateRow colSpan={columns.length}>{state}</StateRow>
   } else {
     body = rows.map((row, index) => (
       <TableRow key={getRowKey(row)}>
@@ -88,29 +102,95 @@ export function DataTable<T>({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-card">
-      <div
-        className={cn('overflow-x-auto transition-opacity', isFetching && !isLoading && 'opacity-60')}
-        aria-busy={isFetching}
-      >
-        <Table className="whitespace-nowrap">
-          <TableHeader className="bg-muted/50">
-            <TableRow>
-              {columns.map((column) => (
-                <TableHead
-                  key={column.header}
-                  className={cn('h-11 font-semibold', alignClass[column.align ?? 'left'])}
-                >
-                  {column.header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>{body}</TableBody>
-        </Table>
+    <section aria-label={label} aria-busy={isLoading || isFetching} className="flex min-w-0 flex-col gap-3">
+      {/* Phones: one card per row, no sideways scrolling. */}
+      <div className={cn('md:hidden', refreshing && 'opacity-60')}>
+        {isLoading ? (
+          <ul className="flex flex-col gap-3">
+            {Array.from({ length: 4 }, (_, i) => (
+              <li key={i} className="flex flex-col gap-3 rounded-xl border bg-card p-4">
+                <Skeleton className="h-5 w-2/3" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-1/2" />
+              </li>
+            ))}
+          </ul>
+        ) : state ? (
+          <div className="rounded-xl border bg-card px-4 py-10 text-center">{state}</div>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {rows.map((row, index) => (
+              <li key={getRowKey(row)}>
+                <RowCard row={row} rowNumber={offset + index + 1} columns={columns} />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
+
+      {/* Tablet and up: the full table. */}
+      <div className="hidden min-w-0 overflow-hidden rounded-xl border bg-card md:block">
+        <div className={cn('overflow-x-auto transition-opacity', refreshing && 'opacity-60')}>
+          <Table className="whitespace-nowrap">
+            <TableHeader className="bg-muted/60">
+              <TableRow>
+                {columns.map((column) => (
+                  <TableHead
+                    key={column.header}
+                    className={cn('h-11 font-semibold', alignClass[column.align ?? 'left'])}
+                  >
+                    {column.header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>{body}</TableBody>
+          </Table>
+        </div>
+      </div>
+
       <TablePagination total={total} params={params} onParamsChange={onParamsChange} />
-    </div>
+    </section>
+  )
+}
+
+function RowCard<T>({ row, rowNumber, columns }: { row: T; rowNumber: number; columns: Column<T>[] }) {
+  const pick = (kind: Column<T>['mobile']) => columns.filter((column) => column.mobile === kind)
+  const fields = columns.filter((column) => !column.mobile)
+  const [title] = pick('title')
+  const badges = pick('badge')
+  const actions = pick('actions')
+
+  return (
+    <article className="rounded-xl border bg-card p-4">
+      {(title || badges.length > 0) && (
+        <header className="flex items-start justify-between gap-3">
+          {title && <h3 className="min-w-0 font-semibold break-words">{title.cell(row, rowNumber)}</h3>}
+          {badges.map((column) => (
+            <div key={column.header} className="shrink-0">
+              {column.cell(row, rowNumber)}
+            </div>
+          ))}
+        </header>
+      )}
+      {fields.length > 0 && (
+        <dl className="mt-3 grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-x-3 gap-y-1.5 text-sm">
+          {fields.map((column) => (
+            <div key={column.header} className="contents">
+              <dt className="text-muted-foreground">{column.header}</dt>
+              <dd className="min-w-0 break-words tabular-nums">{column.cell(row, rowNumber)}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {actions.length > 0 && (
+        <footer className="mt-3 flex justify-end border-t pt-2">
+          {actions.map((column) => (
+            <div key={column.header}>{column.cell(row, rowNumber)}</div>
+          ))}
+        </footer>
+      )}
+    </article>
   )
 }
 
@@ -133,16 +213,22 @@ function TablePagination({
   const from = total === 0 ? 0 : params.page * params.size + 1
   const to = Math.min(total, (params.page + 1) * params.size)
   const goTo = (page: number) => onParamsChange({ page })
+  const sizeLabelId = useId()
 
   return (
-    <div className="flex flex-col gap-3 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-end sm:gap-6">
-      <div className="flex items-center gap-2">
-        <span className="text-muted-foreground">Baris per halaman</span>
+    <nav
+      aria-label="Halaman data"
+      className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-end sm:gap-6"
+    >
+      <div className="flex items-center justify-between gap-2 sm:justify-start">
+        <span id={sizeLabelId} className="text-muted-foreground">
+          Baris per halaman
+        </span>
         <Select
           value={String(params.size)}
           onValueChange={(value) => onParamsChange({ size: Number(value), page: 0 })}
         >
-          <SelectTrigger size="sm" className="w-18" aria-label="Baris per halaman">
+          <SelectTrigger size="sm" className="w-18" aria-labelledby={sizeLabelId}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -155,7 +241,7 @@ function TablePagination({
         </Select>
       </div>
       <div className="flex items-center justify-between gap-4">
-        <span className="tabular-nums">
+        <span className="tabular-nums" aria-live="polite">
           {from}–{to} dari {total}
         </span>
         <div className="flex gap-1">
@@ -173,6 +259,6 @@ function TablePagination({
           </Button>
         </div>
       </div>
-    </div>
+    </nav>
   )
 }

@@ -16,12 +16,13 @@ export function HomePage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-2xl bg-primary px-6 py-10 text-primary-foreground sm:px-10 sm:py-14">
-        <p className="flex items-center gap-2 text-lg font-medium opacity-90">
+      <section className="relative overflow-hidden rounded-2xl bg-primary px-5 py-8 text-primary-foreground sm:px-10 sm:py-14">
+        <img src="/logo.svg" alt="" width={290} height={290} className="pointer-events-none absolute -right-10 -bottom-12 size-56 opacity-15 brightness-0 invert sm:size-72" />
+        <p className="relative flex items-center gap-2 text-lg font-medium">
           {text} <Icon className="size-5" aria-hidden />
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-5xl">{user?.displayName}</h1>
-        <p className="mt-4 max-w-xl opacity-85">
+        <h1 className="relative mt-2 text-3xl font-bold tracking-tight text-balance break-words sm:text-5xl">{user?.displayName}</h1>
+        <p className="relative mt-4 max-w-xl">
           Terima kasih sudah mengunjungi situs dashboard RT 7 Geluran, Sidoarjo.
         </p>
       </section>

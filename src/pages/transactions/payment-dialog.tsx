@@ -117,8 +117,11 @@ export function PaymentDialog({ onClose }: { onClose: () => void }) {
         <DialogHeader>
           <DialogTitle>Bayar Arisan</DialogTitle>
           <DialogDescription>
-            Cari anggota, centang tagihan yang dibayar, lalu tekan Bayar. Keyboard: <Kbd>↑</Kbd>
-            <Kbd>↓</Kbd> pindah, <Kbd>Spasi</Kbd> centang, <Kbd>Enter</Kbd> bayar, <Kbd>Esc</Kbd> tutup.
+            Cari anggota, centang tagihan yang dibayar, lalu tekan Bayar.
+            <span className="hidden md:inline">
+              {' '}Keyboard: <Kbd>↑</Kbd>
+              <Kbd>↓</Kbd> pindah, <Kbd>Spasi</Kbd> centang, <Kbd>Enter</Kbd> bayar, <Kbd>Esc</Kbd> tutup.
+            </span>
           </DialogDescription>
         </DialogHeader>
 
@@ -133,7 +136,7 @@ export function PaymentDialog({ onClose }: { onClose: () => void }) {
             loading={search.isFetching}
             getKey={(option) => String(option.id)}
             getLabel={(option) => option.nama}
-            placeholder="Pilih anggota (Enter atau ↓ untuk mencari)"
+            placeholder="Pilih anggota"
             searchPlaceholder="Ketik nama anggota…"
             emptyText={searchHint}
             onSearchChange={setSearchText}
@@ -160,7 +163,7 @@ export function PaymentDialog({ onClose }: { onClose: () => void }) {
             </p>
           ) : (
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
+              <div className="flex min-h-10 items-center gap-3">
                 <Checkbox
                   id="bill-all"
                   checked={allChecked ? true : selected.length > 0 ? 'indeterminate' : false}
@@ -168,19 +171,19 @@ export function PaymentDialog({ onClose }: { onClose: () => void }) {
                     setUnchecked(checked === true ? new Set() : new Set(billList.map((bill) => bill.id)))
                   }
                 />
-                <Label htmlFor="bill-all" className="font-semibold">
+                <Label htmlFor="bill-all" className="flex-1 self-stretch font-semibold">
                   Pilih semua ({billList.length})
                 </Label>
               </div>
-              <ul className="ml-7 flex flex-col gap-3">
+              <ul className="ml-7 flex flex-col">
                 {billList.map((bill) => (
-                  <li key={bill.id} className="flex items-center gap-3">
+                  <li key={bill.id} className="flex min-h-10 items-center gap-3">
                     <Checkbox
                       id={`bill-${bill.id}`}
                       checked={!unchecked.has(bill.id)}
                       onCheckedChange={(checked) => toggle(bill.id, checked === true)}
                     />
-                    <Label htmlFor={`bill-${bill.id}`} className="font-normal tabular-nums">
+                    <Label htmlFor={`bill-${bill.id}`} className="flex-1 self-stretch font-normal tabular-nums">
                       {billLabel(bill)}
                     </Label>
                   </li>
@@ -190,11 +193,11 @@ export function PaymentDialog({ onClose }: { onClose: () => void }) {
           )}
         </div>
 
-        <DialogFooter className="items-center sm:justify-between">
-          <p className="text-sm">
-            Total: <span className="font-semibold tabular-nums">{rupiah(total)}</span>
+        <DialogFooter className="flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-baseline justify-between gap-2 text-sm sm:justify-start">
+            Total: <span className="text-base font-semibold tabular-nums">{rupiah(total)}</span>
           </p>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:flex">
             <Button variant="outline" onClick={onClose} disabled={pay.isPending}>
               Tutup
             </Button>

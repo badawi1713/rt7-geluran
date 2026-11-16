@@ -39,14 +39,15 @@ export function MasterMembersPage() {
   const deleteMutation = useDeleteMasterMember()
 
   const columns: Column<MasterMember>[] = [
-    { header: 'No', align: 'center', className: 'w-14 tabular-nums', cell: (_, n) => n },
-    { header: 'Nama', cell: (row) => <span className="font-medium">{row.nama || '-'}</span> },
+    { header: 'No', align: 'center', className: 'w-14 tabular-nums', mobile: 'hide', cell: (_, n) => n },
+    { header: 'Nama', mobile: 'title', cell: (row) => <span className="font-medium">{row.nama || '-'}</span> },
     { header: 'Keterangan', cell: (row) => row.keterangan || '-', className: 'max-w-72 truncate' },
     { header: 'Tanggal Dibuat', align: 'center', cell: (row) => row.created_date || '-' },
     { header: 'Tanggal Diubah', align: 'center', cell: (row) => row.last_updated || '-' },
     {
       header: 'Aksi',
       align: 'center',
+      mobile: 'actions',
       cell: (row) => (
         <RowActions
           label={row.nama ?? String(row.id)}
@@ -66,11 +67,13 @@ export function MasterMembersPage() {
         onSearch={(search) => setParams({ search, page: 0 })}
       >
         <ShortcutButton shortcut="N" onClick={() => setCreateOpen(true)}>
-          <PlusIcon /> Tambah
+          <PlusIcon aria-hidden /> Tambah anggota
         </ShortcutButton>
       </PageHeader>
 
+      <title>Anggota · Arisan RT 7 Geluran</title>
       <DataTable
+        label="Daftar anggota"
         columns={columns}
         rows={query.data?.rows ?? []}
         total={query.data?.total ?? 0}
@@ -106,7 +109,7 @@ export function MasterMembersPage() {
 function CreateDialog({ onClose }: { onClose: () => void }) {
   const mutation = useCreateMasterMember()
   return (
-    <FormDialog open onOpenChange={(open) => !open && onClose()} title="Data Baru" formId="master-member-form" pending={mutation.isPending}>
+    <FormDialog open onOpenChange={(open) => !open && onClose()} title="Tambah anggota" formId="master-member-form" pending={mutation.isPending}>
       <MemberForm
         defaultValues={{ nama: '', keterangan: '' }}
         onSubmit={(values) => mutation.mutate(values, { onSuccess: onClose })}
@@ -120,7 +123,7 @@ function EditDialog({ id, onClose }: { id: Id; onClose: () => void }) {
   const mutation = useUpdateMasterMember()
 
   return (
-    <FormDialog open onOpenChange={(open) => !open && onClose()} title="Edit Data" formId="master-member-form" pending={mutation.isPending}>
+    <FormDialog open onOpenChange={(open) => !open && onClose()} title="Ubah data anggota" formId="master-member-form" pending={mutation.isPending}>
       {detail.data ? (
         <MemberForm
           defaultValues={{ nama: detail.data.nama ?? '', keterangan: detail.data.keterangan ?? '' }}

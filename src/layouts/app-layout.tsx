@@ -29,6 +29,8 @@ import {
 } from '@/components/ui/sidebar'
 import { useAuth } from '@/features/auth/auth-provider'
 import { isMac } from '@/hooks/use-hotkey'
+import { BrandMark } from '@/components/brand'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { navGroups } from './navigation'
 
 function initials(name: string) {
@@ -63,9 +65,7 @@ function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link to="/beranda">
-                <span className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sm font-bold text-sidebar-primary-foreground">
-                  7
-                </span>
+                <BrandMark />
                 <span className="grid leading-tight">
                   <span className="truncate font-semibold">RT 7 Geluran</span>
                   <span className="truncate text-xs text-muted-foreground">Taman, Sidoarjo</span>
@@ -127,7 +127,7 @@ function AppSidebar() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onSelect={signOut}>
-                  <LogOutIcon /> Keluar
+                  <LogOutIcon aria-hidden /> Keluar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -148,17 +148,26 @@ export function AppLayout() {
         Lewati ke konten
       </a>
       <AppSidebar />
-      <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
-          <SidebarTrigger aria-label="Buka atau tutup menu" />
-          <Separator orientation="vertical" className="h-4" />
-          <span className="text-sm text-muted-foreground">Dashboard RT 7 Geluran</span>
+      <SidebarInset className="min-w-0">
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background px-2 pt-[env(safe-area-inset-top)] sm:px-4">
+          <SidebarTrigger aria-label="Buka atau tutup menu" className="size-10" />
+          <Separator orientation="vertical" className="hidden h-4 md:block" />
+          <Link to="/beranda" className="flex items-center gap-2 rounded-md px-1 md:hidden">
+            <BrandMark className="size-6" />
+            <span className="font-semibold">RT 7 Geluran</span>
+          </Link>
+          <span className="hidden text-sm text-muted-foreground md:inline">Arisan RT 7 Geluran</span>
           <span className="ml-auto hidden items-center gap-1.5 text-xs text-muted-foreground lg:flex">
             <Kbd>/</Kbd> cari
             <Kbd className="ml-2">{isMac ? '⌘' : 'Ctrl'}B</Kbd> menu
           </span>
+          <ThemeToggle className="ml-auto size-10 lg:ml-2" />
         </header>
-        <div id="main-content" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 outline-none sm:px-6 lg:py-8">
+        <div
+          id="main-content"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-7xl flex-1 px-4 pt-5 pb-[calc(2rem+env(safe-area-inset-bottom))] outline-none sm:px-6 lg:py-8"
+        >
           <Outlet />
         </div>
       </SidebarInset>

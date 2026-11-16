@@ -12,9 +12,9 @@ import { PaymentDialog } from './payment-dialog'
 
 const columns: Column<ArisanTransaction>[] = [
   { header: 'ID', align: 'center', className: 'tabular-nums text-muted-foreground', cell: (row) => row.id },
-  { header: 'Nama', cell: (row) => <span className="font-medium">{row.anggota_nama || '-'}</span> },
+  { header: 'Nama', mobile: 'title', cell: (row) => <span className="font-medium">{row.anggota_nama || '-'}</span> },
   { header: 'Nominal', align: 'right', className: 'tabular-nums', cell: (row) => rupiah(row.nominal) },
-  { header: 'Lunas', cell: (row) => <StatusBadge status={row.lunas} /> },
+  { header: 'Lunas', mobile: 'badge', cell: (row) => <StatusBadge status={row.lunas} /> },
   { header: 'Keterangan', cell: (row) => row.keterangan || '-', className: 'max-w-64 truncate' },
   { header: 'Lokasi', cell: (row) => row.pertemuan_lokasi || '-' },
   { header: 'Pertemuan Ke', align: 'center', className: 'tabular-nums', cell: (row) => row.pertemuan_ke || '-' },
@@ -37,14 +37,16 @@ export function TransactionsPage() {
         onSearch={(search) => setParams({ search, page: 0 })}
       >
         <ShortcutButton shortcut="B" onClick={() => setPaymentOpen(true)}>
-          <BanknoteIcon /> Bayar
+          <BanknoteIcon aria-hidden /> Bayar arisan
         </ShortcutButton>
         <ShortcutButton shortcut="M" variant="outline" onClick={() => setManualOpen(true)}>
-          <FilePlusIcon /> Tagihan Manual
+          <FilePlusIcon aria-hidden /> Tagihan manual
         </ShortcutButton>
       </PageHeader>
 
+      <title>Transaksi Arisan · Arisan RT 7 Geluran</title>
       <DataTable
+        label="Daftar transaksi arisan"
         columns={columns}
         rows={query.data?.rows ?? []}
         total={query.data?.total ?? 0}

@@ -1,3 +1,5 @@
+import { BrandMark } from '@/components/brand'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { useState } from 'react'
@@ -36,10 +38,12 @@ export function SignInPage() {
 
   return (
     <div className="grid min-h-dvh md:grid-cols-2">
-      <main className="flex items-center justify-center px-4 py-12 sm:px-8">
+      <main className="relative flex items-center justify-center px-4 py-12 sm:px-8">
+        <ThemeToggle className="absolute top-3 right-3 size-10" />
         <div className="w-full max-w-sm">
-          <p className="text-sm font-medium text-primary">RT 7 Geluran · Taman, Sidoarjo</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">Masuk</h1>
+          <BrandMark className="size-12" />
+          <p className="mt-5 text-sm font-medium text-primary">RT 7 Geluran · Taman, Sidoarjo</p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight">Masuk</h1>
           <p className="mt-2 text-sm text-muted-foreground">Gunakan nomor Whatsapp yang terdaftar di pengurus RT.</p>
 
           <form onSubmit={onSubmit} noValidate className="mt-8">

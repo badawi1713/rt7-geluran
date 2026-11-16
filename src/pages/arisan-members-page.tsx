@@ -36,15 +36,16 @@ export function ArisanMembersPage() {
   const deleteMutation = useDeleteArisanMember()
 
   const columns: Column<ArisanMember>[] = [
-    { header: 'No', align: 'center', className: 'w-14 tabular-nums', cell: (_, n) => n },
-    { header: 'Nama', cell: (row) => <span className="font-medium">{row.anggota_name || '-'}</span> },
-    { header: 'Dapat Arisan', cell: (row) => <StatusBadge status={row.dapat} /> },
+    { header: 'No', align: 'center', className: 'w-14 tabular-nums', mobile: 'hide', cell: (_, n) => n },
+    { header: 'Nama', mobile: 'title', cell: (row) => <span className="font-medium">{row.anggota_name || '-'}</span> },
+    { header: 'Dapat Arisan', mobile: 'badge', cell: (row) => <StatusBadge status={row.dapat} /> },
     { header: 'Keterangan', cell: (row) => row.keterangan || '-', className: 'max-w-72 truncate' },
     { header: 'Tanggal Dibuat', align: 'center', cell: (row) => row.created_date || '-' },
     { header: 'Tanggal Diubah', align: 'center', cell: (row) => row.last_updated || row.lastUpdated || '-' },
     {
       header: 'Aksi',
       align: 'center',
+      mobile: 'actions',
       cell: (row) => (
         <RowActions
           label={row.anggota_name ?? String(row.id)}
@@ -64,11 +65,13 @@ export function ArisanMembersPage() {
         onSearch={(search) => setParams({ search, page: 0 })}
       >
         <ShortcutButton shortcut="N" onClick={() => setCreateOpen(true)}>
-          <PlusIcon /> Tambah
+          <PlusIcon aria-hidden /> Tambah peserta
         </ShortcutButton>
       </PageHeader>
 
+      <title>Anggota Arisan · Arisan RT 7 Geluran</title>
       <DataTable
+        label="Daftar peserta arisan"
         columns={columns}
         rows={query.data?.rows ?? []}
         total={query.data?.total ?? 0}
@@ -129,7 +132,7 @@ function CreateDialog({ onClose }: { onClose: () => void }) {
   })
 
   return (
-    <FormDialog open onOpenChange={(open) => !open && onClose()} title="Data Baru" formId="arisan-member-form" pending={mutation.isPending}>
+    <FormDialog open onOpenChange={(open) => !open && onClose()} title="Tambah peserta arisan" formId="arisan-member-form" pending={mutation.isPending}>
       <form id="arisan-member-form" onSubmit={onSubmit} noValidate>
         <FieldGroup>
           <Controller
@@ -192,7 +195,7 @@ function EditDialog({ id, onClose }: { id: Id; onClose: () => void }) {
   const mutation = useUpdateArisanMember()
 
   return (
-    <FormDialog open onOpenChange={(open) => !open && onClose()} title="Edit Data" formId="arisan-member-edit-form" pending={mutation.isPending}>
+    <FormDialog open onOpenChange={(open) => !open && onClose()} title="Ubah data peserta" formId="arisan-member-edit-form" pending={mutation.isPending}>
       {detail.data ? (
         <EditForm
           defaultValues={{ nama: detail.data.anggota_name ?? '', keterangan: detail.data.keterangan ?? '' }}

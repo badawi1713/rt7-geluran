@@ -7,8 +7,8 @@ import { rupiah } from '@/lib/format'
 const count = (value?: number) => (value ?? 0).toLocaleString('id-ID')
 
 const columns: Column<ArisanReport>[] = [
-  { header: 'ID', align: 'center', className: 'tabular-nums text-muted-foreground', cell: (row) => row.id },
-  { header: 'Tanggal', align: 'center', cell: (row) => row.tanggal || '-' },
+  { header: 'ID', align: 'center', className: 'tabular-nums text-muted-foreground', mobile: 'hide', cell: (row) => row.id },
+  { header: 'Tanggal', align: 'center', mobile: 'title', cell: (row) => row.tanggal || '-' },
   { header: 'Pertemuan Ke', align: 'center', className: 'tabular-nums', cell: (row) => row.pertemuan_ke || '-' },
   { header: 'Dapat 1', cell: (row) => row.dapat_1 || '-' },
   { header: 'Dapat 2', cell: (row) => row.dapat_2 || '-' },
@@ -32,7 +32,9 @@ export function ReportsPage() {
         search={params.search}
         onSearch={(search) => setParams({ search, page: 0 })}
       />
+      <title>Laporan Arisan · Arisan RT 7 Geluran</title>
       <DataTable
+        label="Rekap arisan per pertemuan"
         columns={columns}
         rows={query.data?.rows ?? []}
         total={query.data?.total ?? 0}
