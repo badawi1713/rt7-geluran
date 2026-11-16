@@ -26,7 +26,7 @@ export function PageHeader({ title, description, search, onSearch, children }: P
   useHotkey({ code: 'Slash' }, () => inputRef.current?.focus())
 
   return (
-    <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <header className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
       <div className="min-w-0">
         <h1 className="flex items-center gap-2.5 text-xl font-bold tracking-tight sm:text-2xl">
           <Stripes />
@@ -34,7 +34,7 @@ export function PageHeader({ title, description, search, onSearch, children }: P
         </h1>
         {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
       </div>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center xl:shrink-0">
         <form
           role="search"
           className="w-full sm:w-64 sm:flex-none"
@@ -79,7 +79,7 @@ export function PageHeader({ title, description, search, onSearch, children }: P
             )}
           </InputGroup>
         </form>
-        {children && <div className="flex flex-wrap gap-2 [&>*]:flex-1 sm:[&>*]:flex-none">{children}</div>}
+        {children && <div className="flex flex-wrap gap-2 lg:flex-nowrap [&>*]:flex-1 sm:[&>*]:flex-none">{children}</div>}
       </div>
     </header>
   )

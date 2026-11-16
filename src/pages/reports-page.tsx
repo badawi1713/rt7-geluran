@@ -25,7 +25,7 @@ export function ReportsPage() {
   const query = useArisanReports(params)
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 lg:min-h-0 lg:flex-1 lg:gap-5">
       <PageHeader
         title="Laporan Arisan"
         description="Rekap pembayaran per pertemuan."

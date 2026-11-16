@@ -148,7 +148,7 @@ export function AppLayout() {
         Lewati ke konten
       </a>
       <AppSidebar />
-      <SidebarInset className="min-w-0">
+      <SidebarInset className="min-w-0 lg:h-svh lg:overflow-hidden">
         <header className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b bg-background px-2 pt-[env(safe-area-inset-top)] sm:px-4">
           <SidebarTrigger aria-label="Buka atau tutup menu" className="size-10" />
           <Separator orientation="vertical" className="hidden h-4 md:block" />
@@ -166,7 +166,7 @@ export function AppLayout() {
         <div
           id="main-content"
           tabIndex={-1}
-          className="mx-auto w-full max-w-7xl flex-1 px-4 pt-5 pb-[calc(2rem+env(safe-area-inset-bottom))] outline-none sm:px-6 lg:py-8"
+          className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pt-5 pb-[calc(2rem+env(safe-area-inset-bottom))] outline-none sm:px-6 lg:min-h-0 lg:overflow-y-auto lg:py-6"
         >
           <Outlet />
         </div>

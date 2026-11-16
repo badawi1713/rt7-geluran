@@ -29,7 +29,7 @@ export function TransactionsPage() {
   const [manualOpen, setManualOpen] = useState(false)
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 lg:min-h-0 lg:flex-1 lg:gap-5">
       <PageHeader
         title="Transaksi Arisan"
         description="Tagihan dan pembayaran arisan setiap anggota."

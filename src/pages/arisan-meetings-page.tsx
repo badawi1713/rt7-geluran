@@ -57,7 +57,7 @@ export function ArisanMeetingsPage() {
   ]
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 lg:min-h-0 lg:flex-1 lg:gap-5">
       <PageHeader
         title="Pertemuan Arisan"
         description="Jadwal, lokasi dan pemenang tiap pertemuan."

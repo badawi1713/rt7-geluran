@@ -59,7 +59,7 @@ export function MasterMembersPage() {
   ]
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 lg:min-h-0 lg:flex-1 lg:gap-5">
       <PageHeader
         title="Anggota"
         description="Data warga RT 7 yang terdaftar."

@@ -102,7 +102,7 @@ export function DataTable<T>({
   }
 
   return (
-    <section aria-label={label} aria-busy={isLoading || isFetching} className="flex min-w-0 flex-col gap-3">
+    <section aria-label={label} aria-busy={isLoading || isFetching} className="flex min-w-0 flex-col gap-3 lg:min-h-72 lg:flex-1">
       {/* Phones: one card per row, no sideways scrolling. */}
       <div className={cn('md:hidden', refreshing && 'opacity-60')}>
         {isLoading ? (
@@ -129,10 +129,21 @@ export function DataTable<T>({
       </div>
 
       {/* Tablet and up: the full table. */}
-      <div className="hidden min-w-0 overflow-hidden rounded-xl border bg-card md:block">
-        <div className={cn('overflow-x-auto transition-opacity', refreshing && 'opacity-60')}>
-          <Table className="whitespace-nowrap">
-            <TableHeader className="bg-muted/60">
+      {/* On lg+ the page itself doesn't scroll: this box fills the height and the rows scroll inside it. */}
+      <div className="hidden min-w-0 flex-col overflow-hidden rounded-xl border bg-card transition-shadow has-[[data-slot=table-container]:focus-visible]:border-ring has-[[data-slot=table-container]:focus-visible]:ring-3 has-[[data-slot=table-container]:focus-visible]:ring-ring/50 md:flex lg:min-h-0 lg:flex-1">
+        <div className={cn('flex min-h-0 flex-1 flex-col transition-opacity', refreshing && 'opacity-60')}>
+          <Table
+            className={cn(
+              'whitespace-nowrap',
+              // Striped rows and cell borders make wide rows easy to follow across many columns.
+              '[&_tbody_tr:nth-child(even)]:bg-muted/60 [&_tbody_tr]:hover:bg-accent/60',
+              '[&_td]:border-r [&_th]:border-r [&_td:last-child]:border-r-0 [&_th:last-child]:border-r-0',
+              '[&_td]:px-3 [&_th]:px-3',
+            )}
+            containerClassName="outline-none lg:min-h-0 lg:flex-1 lg:overflow-auto"
+            containerProps={{ tabIndex: 0, role: 'region', 'aria-label': `Tabel ${label.toLowerCase()}` }}
+          >
+            <TableHeader className="sticky top-0 z-10 bg-muted shadow-[inset_0_-1px_0_var(--border)] [&_tr]:border-b-0">
               <TableRow>
                 {columns.map((column) => (
                   <TableHead
@@ -218,7 +229,7 @@ function TablePagination({
   return (
     <nav
       aria-label="Halaman data"
-      className="flex flex-col gap-3 rounded-xl border bg-card px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-end sm:gap-6"
+      className="flex shrink-0 flex-col gap-3 rounded-xl border bg-card px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-end sm:gap-6"
     >
       <div className="flex items-center justify-between gap-2 sm:justify-start">
         <span id={sizeLabelId} className="text-muted-foreground">
