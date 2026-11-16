@@ -4,7 +4,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 interface RowActionsProps {
   label: string
-  onEdit: () => void
+  /** Leave out for rows that can only be deleted. */
+  onEdit?: () => void
   onDelete: () => void
   disabled?: boolean
 }
@@ -12,14 +13,16 @@ interface RowActionsProps {
 export function RowActions({ label, onEdit, onDelete, disabled }: RowActionsProps) {
   return (
     <div className="flex justify-center gap-1">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon-sm" aria-label={`Edit ${label}`} onClick={onEdit} disabled={disabled}>
-            <PencilIcon />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Edit</TooltipContent>
-      </Tooltip>
+      {onEdit && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon-sm" aria-label={`Edit ${label}`} onClick={onEdit} disabled={disabled}>
+              <PencilIcon aria-hidden />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Edit</TooltipContent>
+        </Tooltip>
+      )}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -30,7 +33,7 @@ export function RowActions({ label, onEdit, onDelete, disabled }: RowActionsProp
             disabled={disabled}
             className="text-destructive hover:bg-destructive/10 hover:text-destructive"
           >
-            <Trash2Icon />
+            <Trash2Icon aria-hidden />
           </Button>
         </TooltipTrigger>
         <TooltipContent>Hapus</TooltipContent>

@@ -1,5 +1,5 @@
 import { useId } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon } from 'lucide-react'
+import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -20,6 +20,13 @@ export interface Column<T> {
    * 'hide' is left out (e.g. the row number), anything else is a label/value line.
    */
   mobile?: 'title' | 'badge' | 'actions' | 'hide'
+  /** Makes the header a sort button (needs `sort` and `onSortChange` on the table). */
+  sortKey?: string
+}
+
+export interface SortState {
+  key: string
+  direction: 'asc' | 'desc'
 }
 
 interface DataTableProps<T> {
@@ -35,6 +42,8 @@ interface DataTableProps<T> {
   isFetching?: boolean
   error: unknown
   onRetry: () => void
+  sort?: SortState
+  onSortChange?: (key: string) => void
 }
 
 const alignClass = { left: 'text-left', center: 'text-center', right: 'text-right' }
@@ -51,6 +60,8 @@ export function DataTable<T>({
   isFetching,
   error,
   onRetry,
+  sort,
+  onSortChange,
 }: DataTableProps<T>) {
   const offset = params.page * params.size
   const refreshing = isFetching && !isLoading
@@ -145,14 +156,31 @@ export function DataTable<T>({
           >
             <TableHeader className="sticky top-0 z-10 bg-muted shadow-[inset_0_-1px_0_var(--border)] [&_tr]:border-b-0">
               <TableRow>
-                {columns.map((column) => (
-                  <TableHead
-                    key={column.header}
-                    className={cn('h-11 font-semibold', alignClass[column.align ?? 'left'])}
-                  >
-                    {column.header}
-                  </TableHead>
-                ))}
+                {columns.map((column) => {
+                  const sortable = column.sortKey && onSortChange
+                  const direction = sortable && sort && sort.key === column.sortKey ? sort.direction : undefined
+                  const SortIcon = !direction ? ArrowUpDownIcon : direction === 'asc' ? ArrowUpIcon : ArrowDownIcon
+                  return (
+                    <TableHead
+                      key={column.header}
+                      aria-sort={direction ? (direction === 'asc' ? 'ascending' : 'descending') : undefined}
+                      className={cn('h-11 font-semibold', alignClass[column.align ?? 'left'])}
+                    >
+                      {sortable ? (
+                        <button
+                          type="button"
+                          onClick={() => onSortChange(column.sortKey!)}
+                          className="-mx-1.5 inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                        >
+                          {column.header}
+                          <SortIcon aria-hidden className={cn('size-3.5', !direction && 'text-muted-foreground')} />
+                        </button>
+                      ) : (
+                        column.header
+                      )}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>{body}</TableBody>

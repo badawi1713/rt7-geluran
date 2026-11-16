@@ -63,6 +63,7 @@ export const transactionsApi = {
   },
   pay: (payload: PaymentPayload) => api.post('/v1/api/arisan-transaksi/payment', payload),
   createManualBill: (payload: ManualBillPayload) => api.post('/v1/api/arisan-transaksi', payload),
+  remove: (id: Id) => api.delete(`/v1/api/arisan-transaksi/${id}`),
 }
 
 export function useTransactions(params: ListParams) {
@@ -107,5 +108,14 @@ export function useCreateManualBill() {
     mutationFn: transactionsApi.createManualBill,
     onSuccess: invalidate,
     meta: { successMessage: 'Berhasil memproses tagihan manual!' },
+  })
+}
+
+export function useDeleteTransaction() {
+  const invalidate = useInvalidateMoney()
+  return useMutation({
+    mutationFn: transactionsApi.remove,
+    onSuccess: invalidate,
+    meta: { successMessage: 'Berhasil menghapus data!' },
   })
 }
